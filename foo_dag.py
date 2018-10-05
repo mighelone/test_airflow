@@ -13,6 +13,7 @@ class MyOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self, x, *args, **kwargs):
+        logger.info(f'Init BaseOperator x={x}')
         super().__init__(*args, **kwargs)
         self.x = x
 
@@ -29,10 +30,9 @@ def python_method(ds, **kwargs):
 
 if __name__.startswith('unusual_prefix'):
     dag = DAG(dag_id='foo', start_date=datetime.now())
-    MyOperator(dag=dag, task_id='foo', x=34)
-    task = MyOperator(dag=dag, task_id='foo')
+    task = MyOperator(dag=dag, task_id='foo', x=34)
     task1 = PythonOperator(task_id='doit',
                            provide_context=True,
                            python_callable=python_method,
                            dag=dag)
-    task >> task1
+    # task >> task1
