@@ -24,15 +24,23 @@ class MyOperator(BaseOperator):
 
 
 def python_method(ds, **kwargs):
-    exec_date = kwargs['execution_date']
-    logger.info(f'{exec_date:%Y-%m-%d}')
+    #exec_date = ds['execution_date']
+    # logger.info(f'{exec_date:%Y-%m-%d}')
+    logger.info(kwargs['params'])
 
 
 if __name__.startswith('unusual_prefix'):
     dag = DAG(dag_id='foo', start_date=datetime.now())
+    dag.doc_md = """
+    # Test Dag
+    Test dag operations and others.
+    """
+    # markdown visible in the “Graph View” and “Task Details” pages.
     task = MyOperator(dag=dag, task_id='foo', x=34)
-    task1 = PythonOperator(task_id='doit',
-                           provide_context=True,
-                           python_callable=python_method,
-                           dag=dag)
-    # task >> task1
+    doit = PythonOperator(task_id='doit',
+                          provide_context=True,
+                          python_callable=python_method,
+                          dag=dag,
+                          params=dict(x=34)
+                          )
+    task >> doit
